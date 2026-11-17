@@ -32,7 +32,7 @@ const databaseUsers = [
     { username: "tri_cahya", password: "aditapraja", nama_lengkap: "Tri Cahya Mustika", role: "anggota" },
     { username: "nadia_octavia", password: "aditapraja", nama_lengkap: "Nadia Octavia", role: "anggota" },
     { username: "khoirotul_aini", password: "aditapraja", nama_lengkap: "Khoirotul Aini", role: "anggota" },
-    { username: "wahyu_oktavia", password: "aditapraja", nama_lengkap: "Wahyu Oktavia", role: "anggota" },
+    { username: "wahyu_oktavia", password: "aditapraja", nama_lengkap: "Wahyu Oktavia Putri", role: "anggota" },
     { username: "nanda_ayu", password: "aditapraja", nama_lengkap: "Nanda Ayu Pratiwi", role: "anggota" },
     { username: "juwita_rendrawati", password: "aditapraja", nama_lengkap: "Juwita Rendrawati", role: "anggota" },
     { username: "rahma_nur", password: "aditapraja", nama_lengkap: "Rahma Nur Aini Ajizah", role: "anggota" },
