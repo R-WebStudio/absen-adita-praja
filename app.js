@@ -2,14 +2,13 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log(err)); });
 }
 
-// 1. KONFIGURASI SUPABASE (WAJIB DIGANTI!)
-const supabaseUrl = 'https://xmvjtrlktkihutvmpskq.supabase.co/rest/v1/';
+// 1. KONFIGURASI SUPABASE (SUDAH DIPERBAIKI)
+// Menghapus /rest/v1/ di akhir URL agar koneksi API tidak gagal
+const supabaseUrl = 'https://xmvjtrlktkihutvmpskq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhtdmp0cmxrdGtpaHV0dm1wc2txIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQzMTU1MTAsImV4cCI6MjEwOTg5MTUxMH0.m9rD8UtrL4FrIRsBerdcROouZMK812pJjpoSvTBQEzk';
 
-let supabase;
-if (window.supabase) {
-    supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-}
+// FIX ERROR: Mengganti nama variabel menjadi dbClient agar tidak bentrok dengan library CDN bawaan Supabase
+const dbClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 // 2. DATA 57 AKUN
 const databaseUsers = [
@@ -78,7 +77,7 @@ let userLogin = JSON.parse(localStorage.getItem('userLogin'));
 let currentLat = null, currentLng = null, sanggarLat = 0, sanggarLng = 0;
 let maxRadius = 50, jamBuka = "00:00", jamTutup = "23:59";
 
-// 3. INISIALISASI HALAMAN (Dengan Pengecekan Aman)
+// 3. INISIALISASI HALAMAN
 document.addEventListener('DOMContentLoaded', () => {
     const path = window.location.pathname;
     if (path.includes('anggota.html') && (!userLogin || userLogin.role !== 'anggota')) { window.location.href = 'index.html'; return; }
@@ -87,15 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (document.getElementById('halaman-admin')) {
         if(document.getElementById('user-info')) document.getElementById('user-info').innerText = userLogin.nama_lengkap;
-        if(supabase) {
-           muatPengaturanSanggar();
-           muatDataAbsensiHarianCloud();
-        }
+        muatPengaturanSanggar();
+        muatDataAbsensiHarianCloud();
         if(document.getElementById('filter-tanggal')) document.getElementById('filter-tanggal').value = new Date().toISOString().split('T')[0];
     }
     
     if (document.getElementById('halaman-anggota')) {
-        // Ganti Nama Sesuai User Yang Login (Cek Dulu Agar Tidak Error)
         if (document.getElementById('user-info-top')) document.getElementById('user-info-top').innerText = userLogin.nama_lengkap;
         if (document.getElementById('welcome-nama')) document.getElementById('welcome-nama').innerText = userLogin.nama_lengkap;
         if (document.getElementById('wm-nama')) document.getElementById('wm-nama').innerText = userLogin.nama_lengkap;
@@ -104,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ambilLokasiSekarang(); 
         jalankanKamera(); 
         jalankanJamLive(); 
-        if(supabase) muatRiwayatPribadi();
+        muatRiwayatPribadi();
     }
 });
 
@@ -162,7 +158,7 @@ function jalankanJamLive() {
 }
 
 async function ambilLokasiSekarang() {
-    if(supabase) await muatPengaturanSanggar();
+    await muatPengaturanSanggar();
     if (navigator.geolocation) {
         navigator.geolocation.watchPosition((pos) => {
             currentLat = pos.coords.latitude; currentLng = pos.coords.longitude;
@@ -201,8 +197,6 @@ async function simpanIzinRapat() {
 }
 
 async function kirimKeDatabaseRPC(statusTeks, jarakMeter, rpcName, camId) {
-    if(!supabase) { alert('URL atau Key Supabase belum dikonfigurasi di file app.js'); return; }
-
     const video = document.getElementById(camId);
     let fotoBase64 = "";
     if (video && video.videoWidth > 0) {
@@ -210,14 +204,11 @@ async function kirimKeDatabaseRPC(statusTeks, jarakMeter, rpcName, camId) {
         cvs.width = video.videoWidth; 
         cvs.height = video.videoHeight;
         const ctx = cvs.getContext('2d');
-        // FIX MIRROR: Gambar video langsung, tanpa di-flip/scale
         ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
-        
-        // Kompres sedikit agar tidak berat di database
         fotoBase64 = cvs.toDataURL('image/jpeg', 0.5); 
     }
     try {
-        const { data, error } = await supabase.rpc(rpcName, {
+        const { data, error } = await dbClient.rpc(rpcName, {
             p_username: userLogin.username, 
             p_nama: userLogin.nama_lengkap, 
             p_jarak: jarakMeter, 
@@ -232,8 +223,7 @@ async function kirimKeDatabaseRPC(statusTeks, jarakMeter, rpcName, camId) {
 }
 
 async function muatRiwayatPribadi() {
-    if(!supabase) return;
-    const { data } = await supabase.from('riwayat_absensi').select('*').eq('username', userLogin.username).order('waktu_absen', { ascending: false }).limit(5);
+    const { data } = await dbClient.from('riwayat_absensi').select('*').eq('username', userLogin.username).order('waktu_absen', { ascending: false }).limit(5);
     const tbody = document.getElementById('isi-riwayat-pribadi');
     if(tbody){
         if (data && data.length > 0) tbody.innerHTML = data.map(a => `<tr><td>${new Date(a.waktu_absen).toLocaleString('id-ID')}</td><td>${a.status} <br> ${a.jarak_meter}m</td></tr>`).join('');
@@ -243,7 +233,7 @@ async function muatRiwayatPribadi() {
 
 // 7. FUNGSI ADMIN
 async function muatPengaturanSanggar() {
-    const { data } = await supabase.from('setting_lokasi').select('*').eq('id', 1).single();
+    const { data } = await dbClient.from('setting_lokasi').select('*').eq('id', 1).single();
     if (data) {
         sanggarLat = data.latitude; sanggarLng = data.longitude; maxRadius = data.max_radius_meter;
         jamBuka = data.waktu_mulai ? data.waktu_mulai.substring(0,5) : "00:00";
@@ -260,14 +250,12 @@ async function muatPengaturanSanggar() {
 
 async function simpanPengaturanRadiusCloud(e) {
     e.preventDefault();
-    if(!supabase) return;
-    await supabase.from('setting_lokasi').update({ 
+    await dbClient.from('setting_lokasi').update({ 
         latitude: document.getElementById('cfg-lat').value, longitude: document.getElementById('cfg-lng').value, max_radius_meter: document.getElementById('cfg-radius').value, waktu_mulai: document.getElementById('cfg-jam-mulai').value + ':00', waktu_selesai: document.getElementById('cfg-jam-selesai').value + ':00'
     }).eq('id', 1);
     alert("Pengaturan Berhasil Disimpan!"); muatPengaturanSanggar();
 }
 
-// FUNGSI UNTUK MELIHAT FOTO PENUH
 function lihatFotoPenuh(sumberFoto) {
     const jendelaBaru = window.open("");
     jendelaBaru.document.write(`<img src="${sumberFoto}" style="width:100%; max-width:600px; display:block; margin:auto;">`);
@@ -275,13 +263,12 @@ function lihatFotoPenuh(sumberFoto) {
 
 async function muatDataAbsensiHarianCloud() {
     const tglEl = document.getElementById('filter-tanggal');
-    if (!tglEl || !tglEl.value || !supabase) return;
-    const { data } = await supabase.from('riwayat_absensi').select('*').eq('tanggal_absen', tglEl.value).order('waktu_absen', { ascending: true });
+    if (!tglEl || !tglEl.value) return;
+    const { data } = await dbClient.from('riwayat_absensi').select('*').eq('tanggal_absen', tglEl.value).order('waktu_absen', { ascending: true });
     const tbody = document.getElementById('isi-rekap-absen');
     if(tbody){
         if (data && data.length > 0) {
             tbody.innerHTML = data.map(a => {
-                // Menampilkan foto yang dikirim dari Base64
                 const foto = a.foto_base64 && a.foto_base64.length > 10 ? `<img src="${a.foto_base64}" width="40" height="40" style="border-radius:5px; cursor:pointer; object-fit:cover;" onclick="lihatFotoPenuh('${a.foto_base64}')">` : '-';
                 return `<tr><td>${new Date(a.waktu_absen).toLocaleTimeString('id-ID')}</td><td>${a.nama_lengkap}</td><td>${a.jarak_meter}m</td><td>${a.status}</td><td>${foto}</td></tr>`;
             }).join('');
