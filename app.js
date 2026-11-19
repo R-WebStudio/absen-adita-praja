@@ -285,23 +285,48 @@ async function simpanPengaturanRadiusCloud(e) {
     alert("Pengaturan Berhasil Disimpan!"); muatPengaturanSanggar();
 }
 
+// Modal Pop-Up Foto
 function lihatFotoPenuh(sumberFoto) {
-    const jendelaBaru = window.open("");
-    jendelaBaru.document.write(`<img src="${sumberFoto}" style="width:100%; max-width:600px; display:block; margin:auto;">`);
+    const modal = document.getElementById('modal-foto');
+    const imgZoom = document.getElementById('foto-zoom');
+    if (modal && imgZoom) {
+        imgZoom.src = sumberFoto;
+        modal.style.display = 'flex';
+    }
+}
+
+function tutupFoto() {
+    const modal = document.getElementById('modal-foto');
+    const imgZoom = document.getElementById('foto-zoom');
+    if (modal) modal.style.display = 'none';
+    if (imgZoom) imgZoom.src = '';
 }
 
 async function muatDataAbsensiHarianCloud() {
     const tglEl = document.getElementById('filter-tanggal');
     if (!tglEl || !tglEl.value) return;
+    
+    // Semua data diambil dari Supabase berdasarkan tanggal, aman meskipun web reset
     const { data } = await dbClient.from('riwayat_absensi').select('*').eq('tanggal_absen', tglEl.value).order('waktu_absen', { ascending: true });
+    
     const tbody = document.getElementById('isi-rekap-absen');
     if(tbody){
         if (data && data.length > 0) {
             tbody.innerHTML = data.map(a => {
-                const foto = a.foto_base64 && a.foto_base64.length > 10 ? `<img src="${a.foto_base64}" width="40" height="40" style="border-radius:5px; cursor:pointer; object-fit:cover;" onclick="lihatFotoPenuh('${a.foto_base64}')">` : '-';
-                return `<tr><td>${new Date(a.waktu_absen).toLocaleTimeString('id-ID')}</td><td>${a.nama_lengkap}</td><td>${a.jarak_meter}m</td><td>${a.status}</td><td>${foto}</td></tr>`;
+                // Saat diklik, mengirim This.src ke modal
+                const foto = a.foto_base64 && a.foto_base64.length > 10 ? `<img src="${a.foto_base64}" width="40" height="40" style="border-radius:5px; cursor:pointer; object-fit:cover; border: 1px solid #ccc;" onclick="lihatFotoPenuh(this.src)" title="Klik untuk perbesar">` : 'Tidak Ada Foto';
+                
+                return `<tr>
+                    <td>${new Date(a.waktu_absen).toLocaleTimeString('id-ID')}</td>
+                    <td>${a.nama_lengkap}</td>
+                    <td>${a.jarak_meter}m</td>
+                    <td>${a.status}</td>
+                    <td>${foto}</td>
+                </tr>`;
             }).join('');
-        } else tbody.innerHTML = `<tr><td colspan="5" class="text-center">Kosong.</td></tr>`;
+        } else {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center">Belum ada data absensi di tanggal ini.</td></tr>`;
+        }
     }
 }
 
