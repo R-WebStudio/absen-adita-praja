@@ -1,8 +1,3 @@
-
-
-
-JS icon
-app
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log(err)); });
 }
@@ -38,46 +33,40 @@ const databaseUsers = [
     { username: "fatich_faiklil", password: "aditapraja", nama_lengkap: "Fatich Faiklil Ramadhani", role: "anggota" },
     { username: "galuh_lyandhini", password: "aditapraja", nama_lengkap: "Galuh Lyandhini", role: "anggota" },
 
+    { username: "tri_cahya", password: "aditapraja", nama_lengkap: "Tri Cahya Mustika", role: "anggota" },
     { username: "nadia_octavia", password: "aditapraja", nama_lengkap: "Nadia Octavia", role: "anggota" },
+    { username: "khoirotul_aini", password: "aditapraja", nama_lengkap: "Khoirotul Aini", role: "anggota" },
+    { username: "wahyu_oktavia", password: "aditapraja", nama_lengkap: "Wahyu Oktavia", role: "anggota" },
+    { username: "nanda_ayu", password: "aditapraja", nama_lengkap: "Nanda Ayu Pratiwi", role: "anggota" },
+    { username: "juwita_rendrawati", password: "aditapraja", nama_lengkap: "Juwita Rendrawati", role: "anggota" },
     { username: "rahma_nur", password: "aditapraja", nama_lengkap: "Rahma Nur Aini Ajizah", role: "anggota" },
     { username: "zahra_aura", password: "aditapraja", nama_lengkap: "Zahra Aura Ma'wa", role: "anggota" },
     { username: "aliffa_aulia", password: "aditapraja", nama_lengkap: "Aliffa Aulia Putri", role: "anggota" },
     { username: "dwi_fatma", password: "aditapraja", nama_lengkap: "Dwi Fatma Yanti", role: "anggota" },
     { username: "siti_fatimah", password: "aditapraja", nama_lengkap: "Siti Fatimah", role: "anggota" },
-    
     { username: "felina_septiana", password: "aditapraja", nama_lengkap: "Felina Septiana", role: "anggota" },
     { username: "nayla_priatika", password: "aditapraja", nama_lengkap: "Nayla Priatika", role: "anggota" },
     { username: "pritha_artha", password: "aditapraja", nama_lengkap: "Pritha Artha Dyah V.", role: "anggota" },
     { username: "yulia_ayuning", password: "aditapraja", nama_lengkap: "Yulia Ayuning Rahmawati", role: "anggota" },
     { username: "nurul_qomariyah", password: "aditapraja", nama_lengkap: "Nurul Qomariyah", role: "anggota" },
-    
-    { username: "tri_cahya", password: "aditapraja", nama_lengkap: "Tri Cahya Mustika", role: "anggota" },
     { username: "shalsabilla_safra", password: "aditapraja", nama_lengkap: "Shalsabilla Safra Adzro", role: "anggota" },
     { username: "aulia_nawal", password: "aditapraja", nama_lengkap: "Aulia Nawal Najwa M.", role: "anggota" },
     { username: "cherin_azrillia", password: "aditapraja", nama_lengkap: "Cherin Azrillia A. A.", role: "anggota" },
     { username: "shafa_nabila", password: "aditapraja", nama_lengkap: "Shafa Nabila Eka Putri", role: "anggota" },
     { username: "carissa_dianita", password: "aditapraja", nama_lengkap: "Carissa Dianita Agiesta", role: "anggota" },
-    
     { username: "tata_novita", password: "aditapraja", nama_lengkap: "Tata Novita Sari", role: "anggota" },
     { username: "putri_zahrotus", password: "aditapraja", nama_lengkap: "Putri Zahrotus Syifa", role: "anggota" },
     { username: "jenian_renata", password: "aditapraja", nama_lengkap: "Jenian Renata Setyowati", role: "anggota" },
     { username: "dinafi_ardillah", password: "aditapraja", nama_lengkap: "Dinafi Ardillah", role: "anggota" },
     { username: "shafina_rafeylah", password: "aditapraja", nama_lengkap: "Shafina Rafeylah R.", role: "anggota" },
-    
-    { username: "juwita_rendrawati", password: "aditapraja", nama_lengkap: "Juwita Rendrawati", role: "anggota" },
     { username: "khoirotun_nisa", password: "aditapraja", nama_lengkap: "Khoirotun Nisa Putri", role: "anggota" },
     { username: "sri_dwiyanti", password: "aditapraja", nama_lengkap: "Sri Dwiyanti Agustin", role: "anggota" },
     { username: "sastadiva_lailatul", password: "aditapraja", nama_lengkap: "Sastadiva Lailatul S.", role: "anggota" },
     { username: "cintya_putri", password: "aditapraja", nama_lengkap: "Cintya Putri Rahayu", role: "anggota" },
-    
-    { username: "khoirotul_aini", password: "aditapraja", nama_lengkap: "Khoirotul Aini", role: "anggota" },
-    { username: "nanda_ayu", password: "aditapraja", nama_lengkap: "Nanda Ayu Pratiwi", role: "anggota" },
-    { username: "wahyu_oktavia", password: "aditapraja", nama_lengkap: "Wahyu Oktavia", role: "anggota" },
     { username: "nana_wahyuni", password: "aditapraja", nama_lengkap: "Nana Wahyuni Rahayu", role: "anggota" },
     { username: "anisa_amelia", password: "aditapraja", nama_lengkap: "Anisa Amelia", role: "anggota" },
     { username: "rohmatul_azizah", password: "aditapraja", nama_lengkap: "Rohmatul Azizah", role: "anggota" },
     { username: "zakiya_azzahra", password: "aditapraja", nama_lengkap: "Zakiya Azzahra", role: "anggota" },
-    
     { username: "fika_ramadhani", password: "aditapraja", nama_lengkap: "Fika Ramadhani", role: "anggota" },
     { username: "putri_meila", password: "aditapraja", nama_lengkap: "Putri Meila Fazsa", role: "anggota" },
     { username: "wayne_ditya", password: "aditapraja", nama_lengkap: "Wayne Ditya Pratiwi", role: "anggota" },
@@ -106,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     if (document.getElementById('halaman-anggota')) {
-        // Ganti Nama Sesuai User Yang Login
+        // Ganti Nama Sesuai User Yang Login (Cek Dulu Agar Tidak Error)
         if (document.getElementById('user-info-top')) document.getElementById('user-info-top').innerText = userLogin.nama_lengkap;
         if (document.getElementById('welcome-nama')) document.getElementById('welcome-nama').innerText = userLogin.nama_lengkap;
         if (document.getElementById('wm-nama')) document.getElementById('wm-nama').innerText = userLogin.nama_lengkap;
@@ -153,7 +142,7 @@ async function jalankanKamera() {
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
         const camKeg = document.getElementById('kamera-stream'); if(camKeg) camKeg.srcObject = stream;
         const camRap = document.getElementById('kamera-stream-rapat'); if(camRap) camRap.srcObject = stream;
-    } catch (err) { alert("Izin kamera ditolak! Pastikan memberikan izin kamera pada browser Anda."); }
+    } catch (err) { alert("Izin kamera ditolak!"); }
 }
 
 function jalankanJamLive() {
@@ -184,7 +173,7 @@ async function ambilLokasiSekarang() {
                 if (jarak <= maxRadius) { stGps.className = "alert alert-success"; stGps.innerHTML = `✅ GPS Sesuai. Jarak: ${Math.round(jarak)}m.`; } 
                 else { stGps.className = "alert alert-danger"; stGps.innerHTML = `⛔ Jarak Jauh: ${Math.round(jarak)}m (Maks ${maxRadius}m).`; }
             }
-        }, (err) => { if(document.getElementById('status-gps-alert')) document.getElementById('status-gps-alert').innerHTML = `⛔ GPS Gagal! Pastikan GPS diaktifkan.`; }, { enableHighAccuracy: true });
+        }, (err) => { if(document.getElementById('status-gps-alert')) document.getElementById('status-gps-alert').innerHTML = `⛔ GPS Gagal!`; }, { enableHighAccuracy: true });
     }
 }
 
@@ -221,14 +210,12 @@ async function kirimKeDatabaseRPC(statusTeks, jarakMeter, rpcName, camId) {
         cvs.width = video.videoWidth; 
         cvs.height = video.videoHeight;
         const ctx = cvs.getContext('2d');
-        
         // FIX MIRROR: Gambar video langsung, tanpa di-flip/scale
         ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
         
         // Kompres sedikit agar tidak berat di database
         fotoBase64 = cvs.toDataURL('image/jpeg', 0.5); 
     }
-    
     try {
         const { data, error } = await supabase.rpc(rpcName, {
             p_username: userLogin.username, 
@@ -241,10 +228,7 @@ async function kirimKeDatabaseRPC(statusTeks, jarakMeter, rpcName, camId) {
         if (error) throw error; 
         alert("Berhasil! " + (data ? data.message : "Absen tercatat.")); 
         muatRiwayatPribadi();
-    } catch (err) { 
-        alert(err.message); 
-        console.error(err);
-    }
+    } catch (err) { alert(err.message); }
 }
 
 async function muatRiwayatPribadi() {
@@ -283,6 +267,7 @@ async function simpanPengaturanRadiusCloud(e) {
     alert("Pengaturan Berhasil Disimpan!"); muatPengaturanSanggar();
 }
 
+// FUNGSI UNTUK MELIHAT FOTO PENUH
 function lihatFotoPenuh(sumberFoto) {
     const jendelaBaru = window.open("");
     jendelaBaru.document.write(`<img src="${sumberFoto}" style="width:100%; max-width:600px; display:block; margin:auto;">`);
@@ -296,6 +281,7 @@ async function muatDataAbsensiHarianCloud() {
     if(tbody){
         if (data && data.length > 0) {
             tbody.innerHTML = data.map(a => {
+                // Menampilkan foto yang dikirim dari Base64
                 const foto = a.foto_base64 && a.foto_base64.length > 10 ? `<img src="${a.foto_base64}" width="40" height="40" style="border-radius:5px; cursor:pointer; object-fit:cover;" onclick="lihatFotoPenuh('${a.foto_base64}')">` : '-';
                 return `<tr><td>${new Date(a.waktu_absen).toLocaleTimeString('id-ID')}</td><td>${a.nama_lengkap}</td><td>${a.jarak_meter}m</td><td>${a.status}</td><td>${foto}</td></tr>`;
             }).join('');
@@ -309,4 +295,3 @@ function exportExcel() {
     const wb = XLSX.utils.table_to_book(table, { sheet: "Absensi_Adita_Praja" });
     XLSX.writeFile(wb, `Rekap_Absensi_${document.getElementById('filter-tanggal').value}.xlsx`);
 }
-Processed and analyzed in code
