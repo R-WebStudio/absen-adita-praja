@@ -26,6 +26,12 @@
                     <div class="form-group"><label>Jam Buka & Tutup Absen</label>
                         <div style="display:flex; gap:10px;"><input type="time" id="cfg-jam-mulai" required><input type="time" id="cfg-jam-selesai" required></div>
                     </div>
+                    <div class="form-group"><label>Batas Waktu Absen Rapat?</label>
+                        <select id="cfg-jam-rapat-aktif" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+                            <option value="true">Gunakan Jam Batas Absen</option>
+                            <option value="false">Bebas Waktu (Buka 24 Jam)</option>
+                        </select>
+                    </div>
                     <button type="submit" class="btn-primary mt-1 w-100">Simpan Pengaturan</button>
                 </form>
             </div>
