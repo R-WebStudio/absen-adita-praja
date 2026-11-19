@@ -54,5 +54,6 @@ input:not(.glass-card input) { width: 100%; padding: 8px; border: 1px solid #ccc
 
 /* FIX MIRROR CAMERA: Transform removed so the picture is taken as is */
 video {
-  /* No transform scaleX here so it behaves normally */
+  transform: scaleX(1); 
+  -webkit-transform: scaleX(1);
 }
