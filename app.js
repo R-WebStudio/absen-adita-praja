@@ -74,6 +74,7 @@ const databaseUsers = [
 let userLogin = JSON.parse(localStorage.getItem('userLogin'));
 let currentLat = null, currentLng = null, sanggarLat = 0, sanggarLng = 0;
 let maxRadius = 50, jamBuka = "00:00", jamTutup = "23:59";
+let gunakanJamRapat = true;
 
 // 3. INISIALISASI HALAMAN
 document.addEventListener('DOMContentLoaded', () => {
@@ -188,8 +189,25 @@ async function simpanIzinCloud() {
     let jrk = currentLat ? Math.round(hitungJarak(currentLat, currentLng, sanggarLat, sanggarLng)) : 0;
     kirimKeDatabaseRPC("Izin - " + alasan, jrk, 'catat_absensi_geofencing', 'kamera-stream');
 }
-async function simpanAbsenRapat() { kirimKeDatabaseRPC('Hadir', 0, 'catat_absensi_rapat', 'kamera-stream-rapat'); }
+
+// Pengecekan waktu untuk Rapat
+function cekWaktuDiizinkan() {
+    const skr = new Date();
+    const jamSekarang = skr.getHours().toString().padStart(2, '0') + ":" + skr.getMinutes().toString().padStart(2, '0');
+    if (jamSekarang >= jamBuka && jamSekarang <= jamTutup) {
+        return true;
+    } else {
+        alert(`⛔ Absen ditolak! Waktu absen rapat hanya buka pukul ${jamBuka} - ${jamTutup}`);
+        return false;
+    }
+}
+
+async function simpanAbsenRapat() { 
+    if (gunakanJamRapat && !cekWaktuDiizinkan()) return;
+    kirimKeDatabaseRPC('Hadir', 0, 'catat_absensi_rapat', 'kamera-stream-rapat'); 
+}
 async function simpanIzinRapat() {
+    if (gunakanJamRapat && !cekWaktuDiizinkan()) return;
     const alasan = prompt("Masukkan alasan izin rapat:"); if (!alasan) return;
     kirimKeDatabaseRPC("Izin - " + alasan, 0, 'catat_absensi_rapat', 'kamera-stream-rapat');
 }
@@ -203,12 +221,10 @@ async function kirimKeDatabaseRPC(statusTeks, jarakMeter, rpcName, camId) {
         cvs.height = video.videoHeight;
         const ctx = cvs.getContext('2d');
         
-        // FIX KAMERA MIRROR: Kita paksa balik (flip) kanvasnya secara horizontal 
-        // agar teks/tulisan di foto bisa dibaca dan tidak terbalik
         ctx.translate(cvs.width, 0);
         ctx.scale(-1, 1);
-        
         ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
+        
         fotoBase64 = cvs.toDataURL('image/jpeg', 0.5); 
     }
     try {
@@ -242,20 +258,29 @@ async function muatPengaturanSanggar() {
         sanggarLat = data.latitude; sanggarLng = data.longitude; maxRadius = data.max_radius_meter;
         jamBuka = data.waktu_mulai ? data.waktu_mulai.substring(0,5) : "00:00";
         jamTutup = data.waktu_selesai ? data.waktu_selesai.substring(0,5) : "23:59";
+        gunakanJamRapat = data.gunakan_waktu_rapat !== undefined ? data.gunakan_waktu_rapat : true;
+        
         if (document.getElementById('halaman-admin')) {
             if(document.getElementById('cfg-lat')) document.getElementById('cfg-lat').value = data.latitude; 
             if(document.getElementById('cfg-lng')) document.getElementById('cfg-lng').value = data.longitude;
             if(document.getElementById('cfg-radius')) document.getElementById('cfg-radius').value = data.max_radius_meter;
             if(document.getElementById('cfg-jam-mulai')) document.getElementById('cfg-jam-mulai').value = jamBuka; 
             if(document.getElementById('cfg-jam-selesai')) document.getElementById('cfg-jam-selesai').value = jamTutup;
+            if(document.getElementById('cfg-jam-rapat-aktif')) document.getElementById('cfg-jam-rapat-aktif').value = gunakanJamRapat;
         }
     }
 }
 
 async function simpanPengaturanRadiusCloud(e) {
     e.preventDefault();
+    const modeJamRapat = document.getElementById('cfg-jam-rapat-aktif').value === "true";
     await dbClient.from('setting_lokasi').update({ 
-        latitude: document.getElementById('cfg-lat').value, longitude: document.getElementById('cfg-lng').value, max_radius_meter: document.getElementById('cfg-radius').value, waktu_mulai: document.getElementById('cfg-jam-mulai').value + ':00', waktu_selesai: document.getElementById('cfg-jam-selesai').value + ':00'
+        latitude: document.getElementById('cfg-lat').value, 
+        longitude: document.getElementById('cfg-lng').value, 
+        max_radius_meter: document.getElementById('cfg-radius').value, 
+        waktu_mulai: document.getElementById('cfg-jam-mulai').value + ':00', 
+        waktu_selesai: document.getElementById('cfg-jam-selesai').value + ':00',
+        gunakan_waktu_rapat: modeJamRapat
     }).eq('id', 1);
     alert("Pengaturan Berhasil Disimpan!"); muatPengaturanSanggar();
 }
