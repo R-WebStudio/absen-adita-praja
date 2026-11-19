@@ -1,6 +1,5 @@
 :root { --hijau: #006600; --emas: #cc9900; --putih: #fff; --bg: #f4f7f4; --font: 'Arial', sans-serif; }
 
-/* FIX TYPO: Mengganti tanda minus (-) menjadi bintang (*) */
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); }
 
 body { background: var(--bg); color: #333; line-height: 1.5; }
@@ -50,12 +49,12 @@ nav { background: var(--hijau); color: var(--putih); padding: 15px 5%; display: 
 .btn-izin { background: #F57F17; } .mt-1 { margin-top: 10px; } .w-100 { width: 100%; }
 .table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; } .table th, .table td { padding: 10px; border-bottom: 1px solid #ddd; }
 .form-group { margin-bottom: 15px; } .form-group label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; }
-input:not(.glass-card input) { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
+input:not(.glass-card input), select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
 .btn-primary { padding: 10px 15px; background: var(--hijau); color: var(--emas); border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 .text-center { text-align: center; }
 
-/* FIX KAMERA TAMPILAN LAYAR: Dibalik agar pas seperti cermin di hp */
+/* FIX KAMERA MIRROR DI PREVIEW */
 video {
   transform: scaleX(-1); 
   -webkit-transform: scaleX(-1);
