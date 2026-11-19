@@ -74,7 +74,6 @@ const databaseUsers = [
 let userLogin = JSON.parse(localStorage.getItem('userLogin'));
 let currentLat = null, currentLng = null, sanggarLat = 0, sanggarLng = 0;
 let maxRadius = 50, jamBuka = "00:00", jamTutup = "23:59";
-let gunakanJamRapat = true;
 
 // 3. INISIALISASI HALAMAN
 document.addEventListener('DOMContentLoaded', () => {
@@ -181,33 +180,38 @@ function hitungJarak(lat1, lon1, lat2, lon2) {
 // 6. KIRIM ABSEN KEGIATAN & RAPAT
 async function simpanAbsenCloud() {
     if (!currentLat || !currentLng) { alert("Tunggu sinyal GPS!"); return; }
+    
+    // Cek batas jam buka-tutup untuk absen kegiatan
+    const skr = new Date();
+    const jamSekarang = skr.getHours().toString().padStart(2, '0') + ":" + skr.getMinutes().toString().padStart(2, '0');
+    if (jamSekarang < jamBuka || jamSekarang > jamTutup) {
+        alert(`⛔ Absen kegiatan ditolak! Waktu absen hanya buka pukul ${jamBuka} - ${jamTutup}`);
+        return;
+    }
+
     const jarak = Math.round(hitungJarak(currentLat, currentLng, sanggarLat, sanggarLng));
     kirimKeDatabaseRPC(jarak <= maxRadius ? 'Hadir' : 'Di Luar Area', jarak, 'catat_absensi_geofencing', 'kamera-stream');
 }
+
 async function simpanIzinCloud() {
+    // Cek batas jam buka-tutup untuk izin kegiatan
+    const skr = new Date();
+    const jamSekarang = skr.getHours().toString().padStart(2, '0') + ":" + skr.getMinutes().toString().padStart(2, '0');
+    if (jamSekarang < jamBuka || jamSekarang > jamTutup) {
+        alert(`⛔ Izin kegiatan ditolak! Waktu absen hanya buka pukul ${jamBuka} - ${jamTutup}`);
+        return;
+    }
+
     const alasan = prompt("Masukkan alasan izin kegiatan:"); if (!alasan) return;
     let jrk = currentLat ? Math.round(hitungJarak(currentLat, currentLng, sanggarLat, sanggarLng)) : 0;
     kirimKeDatabaseRPC("Izin - " + alasan, jrk, 'catat_absensi_geofencing', 'kamera-stream');
 }
 
-// Pengecekan waktu untuk Rapat
-function cekWaktuDiizinkan() {
-    const skr = new Date();
-    const jamSekarang = skr.getHours().toString().padStart(2, '0') + ":" + skr.getMinutes().toString().padStart(2, '0');
-    if (jamSekarang >= jamBuka && jamSekarang <= jamTutup) {
-        return true;
-    } else {
-        alert(`⛔ Absen ditolak! Waktu absen rapat hanya buka pukul ${jamBuka} - ${jamTutup}`);
-        return false;
-    }
-}
-
+// --- ABSENSI RAPAT (24 JAM, TANPA CEK WAKTU) ---
 async function simpanAbsenRapat() { 
-    if (gunakanJamRapat && !cekWaktuDiizinkan()) return;
     kirimKeDatabaseRPC('Hadir', 0, 'catat_absensi_rapat', 'kamera-stream-rapat'); 
 }
 async function simpanIzinRapat() {
-    if (gunakanJamRapat && !cekWaktuDiizinkan()) return;
     const alasan = prompt("Masukkan alasan izin rapat:"); if (!alasan) return;
     kirimKeDatabaseRPC("Izin - " + alasan, 0, 'catat_absensi_rapat', 'kamera-stream-rapat');
 }
@@ -258,7 +262,6 @@ async function muatPengaturanSanggar() {
         sanggarLat = data.latitude; sanggarLng = data.longitude; maxRadius = data.max_radius_meter;
         jamBuka = data.waktu_mulai ? data.waktu_mulai.substring(0,5) : "00:00";
         jamTutup = data.waktu_selesai ? data.waktu_selesai.substring(0,5) : "23:59";
-        gunakanJamRapat = data.gunakan_waktu_rapat !== undefined ? data.gunakan_waktu_rapat : true;
         
         if (document.getElementById('halaman-admin')) {
             if(document.getElementById('cfg-lat')) document.getElementById('cfg-lat').value = data.latitude; 
@@ -266,21 +269,18 @@ async function muatPengaturanSanggar() {
             if(document.getElementById('cfg-radius')) document.getElementById('cfg-radius').value = data.max_radius_meter;
             if(document.getElementById('cfg-jam-mulai')) document.getElementById('cfg-jam-mulai').value = jamBuka; 
             if(document.getElementById('cfg-jam-selesai')) document.getElementById('cfg-jam-selesai').value = jamTutup;
-            if(document.getElementById('cfg-jam-rapat-aktif')) document.getElementById('cfg-jam-rapat-aktif').value = gunakanJamRapat;
         }
     }
 }
 
 async function simpanPengaturanRadiusCloud(e) {
     e.preventDefault();
-    const modeJamRapat = document.getElementById('cfg-jam-rapat-aktif').value === "true";
     await dbClient.from('setting_lokasi').update({ 
         latitude: document.getElementById('cfg-lat').value, 
         longitude: document.getElementById('cfg-lng').value, 
         max_radius_meter: document.getElementById('cfg-radius').value, 
         waktu_mulai: document.getElementById('cfg-jam-mulai').value + ':00', 
-        waktu_selesai: document.getElementById('cfg-jam-selesai').value + ':00',
-        gunakan_waktu_rapat: modeJamRapat
+        waktu_selesai: document.getElementById('cfg-jam-selesai').value + ':00'
     }).eq('id', 1);
     alert("Pengaturan Berhasil Disimpan!"); muatPengaturanSanggar();
 }
@@ -306,14 +306,13 @@ async function muatDataAbsensiHarianCloud() {
     const tglEl = document.getElementById('filter-tanggal');
     if (!tglEl || !tglEl.value) return;
     
-    // Semua data diambil dari Supabase berdasarkan tanggal, aman meskipun web reset
+    // Mengambil data dari cloud Supabase
     const { data } = await dbClient.from('riwayat_absensi').select('*').eq('tanggal_absen', tglEl.value).order('waktu_absen', { ascending: true });
     
     const tbody = document.getElementById('isi-rekap-absen');
     if(tbody){
         if (data && data.length > 0) {
             tbody.innerHTML = data.map(a => {
-                // Saat diklik, mengirim This.src ke modal
                 const foto = a.foto_base64 && a.foto_base64.length > 10 ? `<img src="${a.foto_base64}" width="40" height="40" style="border-radius:5px; cursor:pointer; object-fit:cover; border: 1px solid #ccc;" onclick="lihatFotoPenuh(this.src)" title="Klik untuk perbesar">` : 'Tidak Ada Foto';
                 
                 return `<tr>
