@@ -2,12 +2,10 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log(err)); });
 }
 
-// 1. KONFIGURASI SUPABASE (SUDAH DIPERBAIKI)
-// Menghapus /rest/v1/ di akhir URL agar koneksi API tidak gagal
+// 1. KONFIGURASI SUPABASE
 const supabaseUrl = 'https://xmvjtrlktkihutvmpskq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhtdmp0cmxrdGtpaHV0dm1wc2txIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQzMTU1MTAsImV4cCI6MjEwOTg5MTUxMH0.m9rD8UtrL4FrIRsBerdcROouZMK812pJjpoSvTBQEzk';
 
-// FIX ERROR: Mengganti nama variabel menjadi dbClient agar tidak bentrok dengan library CDN bawaan Supabase
 const dbClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 // 2. DATA 57 AKUN
@@ -204,6 +202,12 @@ async function kirimKeDatabaseRPC(statusTeks, jarakMeter, rpcName, camId) {
         cvs.width = video.videoWidth; 
         cvs.height = video.videoHeight;
         const ctx = cvs.getContext('2d');
+        
+        // FIX KAMERA MIRROR: Kita paksa balik (flip) kanvasnya secara horizontal 
+        // agar teks/tulisan di foto bisa dibaca dan tidak terbalik
+        ctx.translate(cvs.width, 0);
+        ctx.scale(-1, 1);
+        
         ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
         fotoBase64 = cvs.toDataURL('image/jpeg', 0.5); 
     }
