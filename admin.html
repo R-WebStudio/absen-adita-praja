@@ -23,14 +23,9 @@
                         <div style="display:flex; gap:10px;"><input type="text" id="cfg-lat" required><input type="text" id="cfg-lng" required></div>
                     </div>
                     <div class="form-group"><label>Maks Radius (Meter)</label><input type="number" id="cfg-radius" required></div>
-                    <div class="form-group"><label>Jam Buka & Tutup Absen</label>
+                    <div class="form-group"><label>Jam Buka & Tutup Absen Kegiatan</label>
                         <div style="display:flex; gap:10px;"><input type="time" id="cfg-jam-mulai" required><input type="time" id="cfg-jam-selesai" required></div>
-                    </div>
-                    <div class="form-group"><label>Batas Waktu Absen Rapat?</label>
-                        <select id="cfg-jam-rapat-aktif" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
-                            <option value="true">Gunakan Jam Batas Absen</option>
-                            <option value="false">Bebas Waktu (Buka 24 Jam)</option>
-                        </select>
+                        <small style="color: #666; margin-top: 5px; display: block;">*Absensi Rapat otomatis terbuka 24 Jam.</small>
                     </div>
                     <button type="submit" class="btn-primary mt-1 w-100">Simpan Pengaturan</button>
                 </form>
