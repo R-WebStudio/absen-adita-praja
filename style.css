@@ -1,5 +1,8 @@
 :root { --hijau: #006600; --emas: #cc9900; --putih: #fff; --bg: #f4f7f4; --font: 'Arial', sans-serif; }
+
+/* FIX TYPO: Mengganti tanda minus (-) menjadi bintang (*) */
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); }
+
 body { background: var(--bg); color: #333; line-height: 1.5; }
 
 /* NAVBAR & MENU HAMBURGER */
@@ -52,8 +55,8 @@ input:not(.glass-card input) { width: 100%; padding: 8px; border: 1px solid #ccc
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 .text-center { text-align: center; }
 
-/* FIX MIRROR CAMERA: Transform removed so the picture is taken as is */
+/* FIX KAMERA TAMPILAN LAYAR: Dibalik agar pas seperti cermin di hp */
 video {
-  transform: scaleX(1); 
-  -webkit-transform: scaleX(1);
+  transform: scaleX(-1); 
+  -webkit-transform: scaleX(-1);
 }
