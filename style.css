@@ -39,6 +39,7 @@ nav { background: var(--hijau); color: var(--putih); padding: 15px 5%; display: 
 /* KOMPONEN */
 .alert { padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-weight: bold; font-size: 0.9rem; }
 .alert-warning { background: #FFF9C4; color: #F57F17; } .alert-success { background: #E8F5E9; color: var(--hijau); } .alert-danger { background: #FFEBEE; color: #D32F2F; }
+.alert-info { background: #E3F2FD; color: #1976D2; }
 .kamera-box { position: relative; background: #000; height: 300px; border-radius: 12px; overflow: hidden; border: 3px solid var(--hijau); }
 .watermark { position: absolute; bottom: 10px; left: 10px; background: rgba(0,102,0,0.7); padding: 5px 10px; border-radius: 5px; color: white; font-size: 0.8rem; text-align: left;}
 .wm-bold { color: var(--emas); font-weight: bold; font-size: 0.9rem;}
@@ -49,3 +50,9 @@ nav { background: var(--hijau); color: var(--putih); padding: 15px 5%; display: 
 input:not(.glass-card input) { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; }
 .btn-primary { padding: 10px 15px; background: var(--hijau); color: var(--emas); border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
+.text-center { text-align: center; }
+
+/* FIX MIRROR CAMERA: Transform removed so the picture is taken as is */
+video {
+  /* No transform scaleX here so it behaves normally */
+}
