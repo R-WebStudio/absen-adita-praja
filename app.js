@@ -216,21 +216,47 @@ async function simpanIzinRapat() {
     kirimKeDatabaseRPC("Izin - " + alasan, 0, 'catat_absensi_rapat', 'kamera-stream-rapat');
 }
 
+// --- FUNGSI MENGGAMBAR TIMESTAMP KE FOTO (HADIR & IZIN) ---
 async function kirimKeDatabaseRPC(statusTeks, jarakMeter, rpcName, camId) {
     const video = document.getElementById(camId);
     let fotoBase64 = "";
+    
     if (video && video.videoWidth > 0) {
         const cvs = document.createElement('canvas'); 
         cvs.width = video.videoWidth; 
         cvs.height = video.videoHeight;
         const ctx = cvs.getContext('2d');
         
+        // Gambar video kamera (di-mirror agar seperti sedang bercermin)
         ctx.translate(cvs.width, 0);
         ctx.scale(-1, 1);
         ctx.drawImage(video, 0, 0, cvs.width, cvs.height);
         
-        fotoBase64 = cvs.toDataURL('image/jpeg', 0.5); 
+        // Kembalikan orientasi canvas ke normal agar teks tidak terbalik
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        
+        // Buat kotak background hitam transparan di bawah foto
+        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+        ctx.fillRect(10, cvs.height - 80, cvs.width - 20, 70);
+        
+        // Cetak Nama Lengkap
+        ctx.fillStyle = "white";
+        ctx.font = "bold 14px Arial";
+        ctx.fillText(userLogin.nama_lengkap, 20, cvs.height - 60);
+        
+        // Cetak Time Stamp (Waktu saat ini)
+        ctx.fillStyle = "#ffcc00"; // Warna teks kuning/emas
+        ctx.fillText(new Date().toLocaleString('id-ID'), 20, cvs.height - 40);
+        
+        // Cetak Status (Bisa "Hadir" atau "Izin - Sakit/Acara")
+        ctx.fillStyle = "white";
+        ctx.font = "13px Arial";
+        ctx.fillText("Status: " + statusTeks, 20, cvs.height - 20);
+        
+        // Konversi ke Base64 dengan kualitas 60% agar rapi
+        fotoBase64 = cvs.toDataURL('image/jpeg', 0.6); 
     }
+    
     try {
         const { data, error } = await dbClient.rpc(rpcName, {
             p_username: userLogin.username, 
